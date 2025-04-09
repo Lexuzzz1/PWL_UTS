@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\KaprodiController;
+use App\Http\Controllers\SuratController;
 use App\Http\Controllers\TataUsahaController;
 
 use Illuminate\Support\Facades\Route;

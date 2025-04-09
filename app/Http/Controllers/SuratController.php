@@ -14,6 +14,11 @@ class SuratController extends Controller
         return view('surat.index', compact('surats'));
     }
 
+    public function skma()
+    {
+        return view('skma');
+    }
+
     public function create()
     {
         // Menampilkan form untuk membuat surat

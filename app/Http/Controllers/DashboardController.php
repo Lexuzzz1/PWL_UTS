@@ -10,11 +10,24 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Memastikan relasi 'role' dimuat dengan benar
-        $user = Auth::user()->load('role');  // Memuat relasi 'role' untuk pengguna yang sedang login
+        $user = Auth::user()->load('role');
         $users = User::all();
-        $jenisSurat = JenisSurat::all();  // Memuat semua jenis surat
-        // Mengirimkan data pengguna ke view 'dashboard'
-        return view('dashboard', compact('user', 'users', 'jenisSurat'));
+        $jenisSurat = JenisSurat::all();
+
+        // Cek nama role
+        $roleName = $user->role_id; // Pastikan field-nya adalah 'name'
+
+        if ($roleName === 1) {
+            return view('mahasiswa.mahasiswa', compact('user', 'users', 'jenisSurat'));
+        } elseif ($roleName === 2) {
+            return view('kaprodi.kaprodi', compact('user', 'users', 'jenisSurat'));
+        } elseif ($roleName === 3) {
+            return view('dashboard.tu', compact('user', 'users', 'jenisSurat'));
+        } elseif ($roleName === 4) {
+            return view('dashboard.admin', compact('user', 'users', 'jenisSurat'));
+        } else {
+            // Jika role tidak diketahui, bisa redirect atau tampilkan view default
+            return abort(403, 'Unauthorized access');
+        }
     }
 }
