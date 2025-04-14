@@ -2,77 +2,106 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Surat;
 use Illuminate\Http\Request;
+use App\Models\Surat;
+use App\Models\JenisSurat;
+use App\Models\DetailSurat;
 
 class SuratController extends Controller
 {
-    public function index()
+    public function mahasiswaIndex()
     {
-        // Menampilkan daftar surat
-        $surats = Surat::all();
-        return view('surat.index', compact('surats'));
-    }
-
-    public function skma()
-    {
-        return view('skma');
+        return view('mahasiswa.index');
     }
 
     public function create()
     {
-        // Menampilkan form untuk membuat surat
-        return view('surat.create');
+        $jenisSurat = JenisSurat::where('status', '1')->get();
+        return view('mahasiswa.form', compact('jenisSurat'));
     }
 
     public function store(Request $request)
     {
-        // Menyimpan surat baru
-        $request->validate([
-            'jenis_surat' => 'required|string|max:255',
-            'keperluan' => 'nullable|string',
+
+        $surat = Surat::create([
+            'status' => '2',
+            'jenis_surat_id' => $request->jenis_surat_id,
+            'user_id' => auth()->user()->id,
         ]);
 
-        Surat::create([
-            'jenis_surat' => $request->jenis_surat,
+        DetailSurat::create([
+            'nrp' => $request->nrp,
+            'name' => $request->name,
+            'alamat' => $request->alamat,
+            'semester' => $request->semester,
             'keperluan' => $request->keperluan,
+            'kode_mata_kuliah' => $request->kode_mata_kuliah,
+            'mata_kuliah' => $request->mata_kuliah,
+            'tujuan_topik' => $request->tujuan_topik,
+            'surat_id' => $surat->id,
         ]);
 
-        return redirect()->route('surat.index');
+        return redirect()->route('dashboard');
     }
 
-    public function show(Surat $surat)
+    public function history()
     {
-        // Menampilkan detail surat
-        return view('surat.show', compact('surat'));
+        $user = auth()->user();
+        $surats = Surat::where('user_id', $user->id)->where('status', '!=', 2)
+            ->get();
+        return view('mahasiswa.history', compact('surats'));
     }
 
-    public function edit(Surat $surat)
+    public function kaprodiIndex()
     {
-        // Menampilkan form untuk mengedit surat
-        return view('surat.edit', compact('surat'));
+        $user = auth()->user();
+        $programStudiId = $user->program_studi_id;
+
+
+        $surats = Surat::where('status', 2)
+            ->with(['user.programStudi'])
+            ->whereHas('user.programStudi', function ($query) use ($programStudiId) {
+                $query->where('program_studi_id', $programStudiId);
+            })
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        // Kirim data ke view
+        return view('kaprodi.index', compact('surats'));
     }
 
-    public function update(Request $request, Surat $surat)
+    public function kaprodiEdit(Surat $surat)
     {
-        // Memperbarui surat
-        $request->validate([
-            'jenis_surat' => 'required|string|max:255',
-            'keperluan' => 'nullable|string',
-        ]);
+        $detailSurat = DetailSurat::where('surat_id', $surat->id)
+        ->with(['surat.jenisSurat'])
+        ->first();
 
+        return view('kaprodi.edit', compact('detailSurat'));
+    }
+
+    public function kaprodiUpdate(Request $request, Surat $surat)
+    {   
         $surat->update([
-            'jenis_surat' => $request->jenis_surat,
-            'keperluan' => $request->keperluan,
+            'status' => $request->status,
         ]);
 
-        return redirect()->route('surat.index');
+        return redirect()->route('kaprodi.index');
     }
 
-    public function destroy(Surat $surat)
+    public function kaprodiHistory()
     {
-        // Menghapus surat
-        $surat->delete();
-        return redirect()->route('surat.index');
+        $user = auth()->user();
+        $programStudiId = $user->program_studi_id;
+
+        $surats = Surat::where('status', '!=', 2)
+            ->with(['user.programStudi'])
+            ->whereHas('user.programStudi', function ($query) use ($programStudiId) {
+                $query->where('program_studi_id', $programStudiId);
+            })
+            ->get();
+
+        return view('kaprodi.history', compact('surats'));
     }
+
 }

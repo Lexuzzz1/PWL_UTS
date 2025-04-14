@@ -1,23 +1,15 @@
 <?php
-// app/Models/Role.php
-
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
 {
-    use HasFactory;
     protected $table = 'role';
+    protected $fillable = ['name'];
 
-    /**
-     * Relasi antara Role dan User (One to Many)
-     * Memastikan bahwa satu role dapat dimiliki oleh banyak pengguna
-     */
-    public function users()
-    {
+    public function user(){
         return $this->hasMany(User::class);
     }
 }

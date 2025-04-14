@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
-
 class AuthenticatedSessionController extends Controller
 {
     /**
@@ -25,32 +24,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        // Validasi kredensial pengguna
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $request->authenticate();
 
-        // Coba untuk login
-        if (Auth::attempt($request->only('email', 'password'))) {
-            $user = Auth::user();
-            // Redirect berdasarkan role pengguna
-            if ($user->role == 'Admin') {
-                return redirect()->route('admin.dashboard');
-            } elseif ($user->role == 'Kaprodi') {
-                return redirect()->route('kaprodi.dashboard');
-            } elseif ($user->role == 'Mahasiswa') {
-                return redirect()->route('mahasiswa.dashboard');
-            }elseif ($user->role == 'TU') {
-                return redirect()->route('tu.dashboard');
-            }
+        $request->session()->regenerate();
 
-        }
-
-        // Jika login gagal
-        return back()->withErrors([
-            'email' => 'Kredensial tidak sesuai.',
-        ]);
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 
     /**

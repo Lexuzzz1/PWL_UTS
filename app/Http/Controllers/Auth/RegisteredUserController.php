@@ -5,50 +5,50 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Role; 
-use App\Models\ProgramStudi;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rules;
+use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    public function create()
+    /**
+     * Display the registration view.
+     */
+    public function create(): View
     {
-        $roles = Role::all();
-        $programStudi = ProgramStudi::all(); 
-        return view('auth.register', compact('roles', 'programStudi'));
-
-        // return dd($programStudi);
+        return view('auth.register');
     }
 
-    public function store(Request $request)
-{
-    // Validasi input
-    $data = $request->validate([
-        'name' => ['required', 'string', 'max:255'],
-        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-        'password' => ['required', 'string', 'min:8', 'confirmed'],
-        'program_studi' => ['required', 'exists:program_studi,id'],  
-        'role_id' => ['required', 'exists:role,id'],  
-    ]);
+    /**
+     * Handle an incoming registration request.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'nrp' => ['required', 'string', 'max:255', 'unique:users'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'programStudi' => ['required'],
+            'role' => ['required'],
+        ]);
 
-    
-    $user = User::create([
-        'name' => $data['name'],
-        'email' => $data['email'],
-        'password' => Hash::make($data['password']),
-        'program_studi' => $data['program_studi'],
-        'role_id' => $data['role_id'],
-    ]);
 
-    event(new Registered($user));
 
-    // Login otomatis setelah registrasi
-    // Auth::login($user);
+        $user = User::create([
+            'nrp' => $request->nrp,
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'programStudi'=> $request->program_studi_id,
+            'role' => $request->role_id
+        ]);
 
-    return Redirect::route('login')->with('status', 'Akun berhasil dibuat. Silakan login.');
-}
-
+        return redirect(route('user.index', absolute: false));
+    }
 }
