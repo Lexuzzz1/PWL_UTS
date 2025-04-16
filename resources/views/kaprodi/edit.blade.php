@@ -45,7 +45,7 @@
 
         <div class="input-style-1">
           <label>Keperluan</label>
-          <input type="text" name="semester" value="{{ $detailSurat->keperluan }}" readonly />
+          <input type="text" name="keperluan" value="{{ $detailSurat->keperluan }}" readonly />
         </div>
 
         <div class="input-style-1">

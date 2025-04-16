@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProgramStudi extends Model
 {
     protected $table = 'program_studi';
-    protected $fillable = ['name'];
+    protected $fillable = ['id','name'];
 
     public function user(){
         return $this->hasMany(User::class);

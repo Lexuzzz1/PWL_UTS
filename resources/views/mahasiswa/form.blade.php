@@ -5,7 +5,7 @@
    <div class="title-wrapper pt-30">
       <div class="row align-items-center">
         <div class="title">
-          <h2 class="text-2xl font-semibold text-gray-800">Data Users</h2>
+          <h2 class="text-2xl font-semibold text-gray-800">Pengajuan Surat</h2>
         </div>
         <!-- end col -->
       </div>

@@ -29,6 +29,9 @@
                    <th class="lead-email">
                       <h6>Status</h6>
                    </th>
+                   <th class="lead-action">
+                      <h6>Tanggal Perubahan Status</h6>
+                   </th>
                  </tr>
                  <!-- end table row-->
                </thead>
@@ -48,6 +51,9 @@
                    @elseif ($surat->status == '1')
                       <p>Disetujui</p>
                    @endif
+                 </td>
+                 <td class="min-width">
+                   <p>{{  $surat->updated_at->format('d M Y H:i')  }}</p>
                  </td>
                 </tr>
                 <!-- end table row -->

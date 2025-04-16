@@ -43,20 +43,18 @@
                    <p class="text-capitalize">{{ $surat->jenisSurat->name }}</p>
                  </td>
                  <td class="min-width">
-                   @if ($surat->status == '2')
-                      <p>Pending</p>
-                   @elseif ($surat->status == '0')
-                      <p>Tolak</p>
-                   @elseif ($surat->status == '1')
-                      <p>Setujui</p>
+                   @if ($surat->status == '1')
+                      <p>Menunggu Surat</p>
+                   @elseif ($surat->status == '3')
+                      <p>Surat Dikirim</p>
                    @endif
                  </td>
                  <td class="min-width">
-                   <p>{{ $surat->created_at->format('d M Y H:i') }}</p>
+                   <p>{{ $surat->updated_at->format('d M Y H:i')}}</p>
                  </td>
                  <td>
                   <div class="action">
-                    <a class="text-success" href="{{ route('kaprodi.edit', $surat->id) }}">
+                    <a class="text-success" href="{{ route('tu.edit', $surat->id) }}">
                         <svg width="25" height="25" viewBox="0 0 24 24" fill="none"
                              xmlns="http://www.w3.org/2000/svg" transform="rotate(0 0 0)">
                             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -83,4 +81,3 @@
  </div>
    
 @endsection
-
